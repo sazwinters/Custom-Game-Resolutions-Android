@@ -6,7 +6,7 @@
 
 ## 📋 Overview
 
-This Magisk module silently sets **optimized resolution downscaling** for over **300 popular games** directly via Android’s built-in Game Manager API. No third‑party apps or per‑game configuration required. Once installed, your games will render at a lower internal resolution, lowering GPU load while keeping the UI crisp.
+This Magisk module silently sets **optimized resolution downscaling** for over **300 popular games** directly via Android’s built-in Game Mode Interventions API. No third‑party apps or per‑game configuration required. Once installed, your games will render at a lower internal resolution, lowering GPU load while keeping the UI crisp.
 
 **Designed for low‑end and mid‑range devices**, but applicable to any device running Android 12 or later.
 
@@ -14,26 +14,24 @@ This Magisk module silently sets **optimized resolution downscaling** for over *
 - Higher and more stable frame rates
 - Less heat and thermal throttling
 - Longer battery life during gaming sessions
-- Works even on ROMs without a full Game Manager implementation
+- Works transparently – no per-game toggles needed
 
 ---
 
 ## 🔧 How It Works
 
-The module uses two native Android mechanisms (both introduced in Android 12):
+The module leverages two native Android mechanisms (both introduced in Android 12):
 
-1. **`device_config put game_overlay`** – writes persistent per‑game downscale factors for all three performance modes (Standard, Performance, Battery).  
-   *Even if your ROM lacks a Game Manager service, these settings are stored and respected by the system.*  
-   See the official Android documentation on game mode interventions:  
-   [developer.android.com/games/optimize/adpf/gamemode/gamemode-interventions](https://developer.android.com/games/optimize/adpf/gamemode/gamemode-interventions)
+1. **`device_config put game_overlay`** – writes persistent per‑game downscale factors as defined by the [Game Mode Interventions](https://developer.android.com/games/optimize/adpf/gamemode/gamemode-interventions) format.  
+   This key is read by the **GameService** system component when a game starts. If your ROM includes GameService (common on stock and many custom ROMs), the downscale is automatically applied. If GameService is missing, the configuration remains safely stored but won’t affect rendering.
 
-2. **`cmd game mode performance`** – activates Performance mode for each game, which may additionally boost CPU/GPU/touch responsiveness.  
-   *If this command is unavailable (custom ROMs, etc.), the overlays still work – you only miss the mode switch.*
+2. **`cmd game mode performance`** – sets each game to Performance mode, which may additionally boost CPU/GPU clocks, touch responsiveness, etc.  
+   This command is only available when the Game Manager service is present; on ROMs without it, this step is skipped gracefully, and the overlay settings (Phase 1) still persist for the future.
 
 **Execution flow:**
 - On every boot, a `service.sh` script runs 15 seconds after boot completes.
 - **Phase 1:** Applies the downscale factors to all 300+ games via `device_config`.
-- **Phase 2:** Attempts to set each game to Performance mode (skipped if unsupported).
+- **Phase 2:** Attempts to set each game to Performance mode (skipped if `cmd game` is unavailable).
 - All actions are logged to `/data/adb/modules/custom_game_resolutions/custom_game_resolutions.log`.
 
 ---
@@ -100,7 +98,7 @@ com.my.favorite.game|0.70
 
 ## 🗑️ Uninstallation
 
-Disabling or removing the module will leave the downscale settings in place, but they will no longer be re‑applied on boot. To fully clean all applied overlays, Manually run the uninstall script (which also runs automatically when uninstalling via Magisk).  
+Disabling or removing the module will leave the downscale settings in place, but they will no longer be re‑applied on boot. To fully clean all applied overlays, manually run the uninstall script (which also runs automatically when uninstalling via Magisk).  
 Alternatively, you can clear individual overlays with:
 
 ```bash
@@ -115,7 +113,7 @@ device_config delete game_overlay <package.name>
 No. Downscaling happens at the system level *after* the game renders its frame. Your in‑game settings (quality, resolution, FPS) remain unchanged; the final output is simply scaled down before display. This means you still benefit from all the other performance boosts of Performance mode.
 
 **Will it work on my non‑Pixel/custom ROM?**  
-Yes. The `device_config` settings are a core Android feature and work on any device running Android 12+. Even if `cmd game` is missing, the overlays still apply. Tested on **Infinix Hot 11s NFC (Helio G88)** but should work on all Android 12+ devices.
+It depends on whether your ROM includes the **GameService** component. Stock Android 12+ and many popular custom ROMs (LineageOS, crDroid, etc.) have it. Even if `cmd game` is unavailable (Phase 2), the device_config overlay (Phase 1) still gets written, so the downscale will activate automatically whenever GameService is present – for example after a ROM update. Tested on **Infinix Hot 11s NFC (Helio G88)** but applicable to any Android 12+ device with GameService.
 
 **Why does the module apply the same factor for all modes?**  
 Because users often switch between Standard/Performance/Battery modes, and keeping the same downscale factor avoids sudden visual quality jumps when toggling. The core goal – reduced GPU load – is achieved in every mode.
