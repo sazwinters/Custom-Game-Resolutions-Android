@@ -75,7 +75,7 @@ cat /data/adb/modules/custom_game_resolutions/custom_game_resolutions.log
 
 ---
 
-## 🔗 Perfect Pairings
+## 🔗 Module recommendations
 
 - **[AsoulOpt](https://github.com/nakixii/Magisk_AsoulOpt)** – The game list in this module is **synced** with AsoulOpt.
 - **[Uperf-Game-Turbo](https://github.com/yinwanxi/Uperf-Game-Turbo)** – Goated module.
