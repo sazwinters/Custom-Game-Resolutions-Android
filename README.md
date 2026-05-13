@@ -100,7 +100,7 @@ com.my.favorite.game|0.70
 
 ## 🗑️ Uninstallation
 
-Disabling or removing the module will leave the downscale settings in place, but they will no longer be re‑applied on boot. To fully clean all applied overlays, flash the module zip again and choose “Uninstall,” or manually run the uninstall script (which also runs automatically when uninstalling via Magisk).  
+Disabling or removing the module will leave the downscale settings in place, but they will no longer be re‑applied on boot. To fully clean all applied overlays, Manually run the uninstall script (which also runs automatically when uninstalling via Magisk).  
 Alternatively, you can clear individual overlays with:
 
 ```bash
