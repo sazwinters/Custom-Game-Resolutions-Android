@@ -1,4 +1,4 @@
-# Custom Game Resolutions by Saz
+# Custom Game Resolutions by saz
 
 **Automatically apply custom downscale factors to hundreds of games – improve performance, reduce heat, and extend battery life on any Android 12+ device.**
 
@@ -140,7 +140,7 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 ## 👤 Credits
 
-- **Saz** – creator and maintainer
+- **saz** – creator
 - The Android Game Manager API and the `device_config` subsystem
 - The Magisk community for inspiration
 
